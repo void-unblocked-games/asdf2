@@ -326,6 +326,10 @@ messageInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
         event.preventDefault();
         sendMessage();
+    } else if (event.key === 'Enter' && event.shiftKey) {
+        // Allow new line with Shift + Enter
+        // The textarea's default behavior for Shift+Enter is to insert a newline,
+        // so we don't need to do anything specific here other than not preventing default.
     }
 });
 
