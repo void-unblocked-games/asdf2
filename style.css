@@ -488,7 +488,7 @@ html[data-theme='dark'] #message-input::placeholder {
     transition: background-color var(--transition-speed), transform 0.1s ease-out;
 }
 
-#gif-button {
+#gif-button, #file-button {
     background-color: var(--button-primary-light);
     color: white;
     border: none;

@@ -9,6 +9,8 @@ const gifModal = document.getElementById('gif-modal');
 const gifSearchInput = document.getElementById('gif-search-input');
 const gifResultsContainer = document.getElementById('gif-results');
 const gifModalCloseButton = document.querySelector('#gif-modal .close-button');
+const fileInput = document.getElementById('file-input');
+const fileButton = document.getElementById('file-button');
 
 // Tenor API Key
 const TENOR_API_KEY = 'AIzaSyB1AM5DigGcL1fyqkmxicsyzMJ_W9-mfpw';
@@ -108,6 +110,17 @@ function displayMessage(message, isCached = false) {
                 dmMessages.set(dmKey, []);
             }
             dmMessages.get(dmKey).push(message);
+        } else if (message.type === 'file') {
+            // Cache file messages as well
+            if (currentRecipient === null) {
+                publicChatMessages.push(message);
+            } else {
+                const dmKey = [message.sender, message.recipient].sort().join('-');
+                if (!dmMessages.has(dmKey)) {
+                    dmMessages.set(dmKey, []);
+                }
+                dmMessages.get(dmKey).push(message);
+            }
         }
     }
 
@@ -115,6 +128,11 @@ function displayMessage(message, isCached = false) {
     const shouldDisplay = (
         (message.type === 'chat' && currentRecipient === null) ||
         (message.type === 'dm' && (
+            (message.sender === myUserId && message.recipient === currentRecipient) ||
+            (message.recipient === myUserId && message.sender === currentRecipient)
+        )) ||
+        (message.type === 'file' && (
+            (currentRecipient === null) ||
             (message.sender === myUserId && message.recipient === currentRecipient) ||
             (message.recipient === myUserId && message.sender === currentRecipient)
         ))
@@ -135,8 +153,17 @@ function displayMessage(message, isCached = false) {
 
         const contentElement = document.createElement('div');
         contentElement.classList.add('content');
-        const unsafeHtml = converter.makeHtml(message.content);
-        contentElement.innerHTML = unsafeHtml;
+
+        if (message.type === 'file') {
+            const fileLink = document.createElement('a');
+            fileLink.href = message.fileData;
+            fileLink.download = message.fileName;
+            fileLink.textContent = `Download ${message.fileName} (${(message.fileSize / 1024).toFixed(2)} KB)`;
+            contentElement.appendChild(fileLink);
+        } else {
+            const unsafeHtml = converter.makeHtml(message.content);
+            contentElement.innerHTML = unsafeHtml;
+        }
 
         // Apply highlighting to new code blocks within this message
         contentElement.querySelectorAll('pre code').forEach((block) => {
@@ -358,6 +385,67 @@ const sendGifMessage = (gifUrl) => {
     }
 };
 
+const sendFile = () => {
+    const file = fileInput.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+        const fileData = event.target.result; // Base64 encoded file
+        const fileName = file.name;
+        const fileSize = file.size;
+        const fileType = file.type;
+
+        if (socket.readyState === WebSocket.OPEN) {
+            let messageType = 'file';
+            let messageRecipient = null;
+
+            if (currentRecipient) {
+                messageRecipient = currentRecipient;
+                displayMessage({
+                    type: 'file',
+                    fileData: fileData,
+                    fileName: fileName,
+                    fileSize: fileSize,
+                    fileType: fileType,
+                    sender: myUserId,
+                    senderVanity: myUserVanity,
+                    recipient: currentRecipient,
+                });
+            } else {
+                displayMessage({
+                    type: 'file',
+                    fileData: fileData,
+                    fileName: fileName,
+                    fileSize: fileSize,
+                    fileType: fileType,
+                    sender: myUserId,
+                    senderVanity: myUserVanity,
+                });
+            }
+
+            const messageToSend = {
+                type: messageType,
+                fileData: fileData,
+                fileName: fileName,
+                fileSize: fileSize,
+                fileType: fileType,
+                sender: myUserId,
+                senderVanity: myUserVanity,
+            };
+            if (messageRecipient) {
+                messageToSend.recipient = messageRecipient;
+            }
+
+            socket.send(JSON.stringify(messageToSend));
+            fileInput.value = ''; // Clear the file input
+        } else {
+            console.log('WebSocket is not open. readyState: ' + socket.readyState);
+        }
+    };
+    reader.readAsDataURL(file);
+};
+
 const sendMessage = () => {
     const content = messageInput.value;
     if (content && socket.readyState === WebSocket.OPEN) {
@@ -408,9 +496,11 @@ const sendMessage = () => {
     };
 };
 
-sendButton.addEventListener('click', sendMessage);
+sendsendButton.addEventListener('click', sendMessage);
 gifButton.addEventListener('click', openGifSearchModal);
 gifModalCloseButton.addEventListener('click', closeGifSearchModal);
+fileButton.addEventListener('click', () => fileInput.click());
+fileInput.addEventListener('change', sendFile);
 gifSearchInput.addEventListener('input', () => {
     const query = gifSearchInput.value;
     if (query.length > 2) { // Only search if query is at least 3 characters
