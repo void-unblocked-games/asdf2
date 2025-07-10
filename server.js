@@ -2,19 +2,15 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const WebSocket = require('ws');
-const { default: Ollama } = require('ollama');
+const ollamaModule = require('ollama');
 
-let ollama;
 let modelName = 'qwen:0.5b'; // Default Ollama model name for Qwen 0.5B
 
-try {
-    ollama = new Ollama({
-        host: process.env.OLLAMA_HOST || 'http://localhost:11434',
-    });
-} catch (error) {
-    console.warn("Warning: Ollama client could not be initialized. Check OLLAMA_HOST environment variable.", error);
-    ollama = null; // Ensure ollama is null if initialization fails
-}
+// The ollama client is now directly imported and configured via environment variables or defaults.
+// No explicit instantiation needed here if the default export is the client instance itself.
+// If the client needs explicit host configuration, it should be done where 'ollama' is used.
+// For now, assuming it picks up OLLAMA_HOST env var or defaults to localhost.
+
 
 const preDefinedAiResponses = [
     "I'm here. How can I help?",
