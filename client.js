@@ -135,6 +135,7 @@ function displayMessage(message, isCached = false) {
 
         messages.appendChild(messageElement);
         messages.scrollTop = messages.scrollHeight;
+        hljs.highlightAll(); // Apply highlighting to new code blocks
     }
 }
 
