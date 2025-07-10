@@ -902,6 +902,7 @@ html[data-theme='dark'] #gif-search-input {
     flex-wrap: wrap;
     justify-content: flex-start; /* Pack items closely to the start */
     align-items: flex-start; /* Align items to the top of the flex lines */
+    align-content: stretch; /* Distribute extra space between lines */
     gap: 10px; /* Space between flex items */
     /* max-height: 300px; Removed as it's now on the parent .gif-modal-content */
     /* overflow-y: auto; Removed as it's now on the parent .gif-modal-content */
