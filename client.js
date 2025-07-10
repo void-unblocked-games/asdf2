@@ -12,6 +12,8 @@ const gifModalCloseButton = document.querySelector('#gif-modal .close-button');
 const fileInput = document.getElementById('file-input');
 const fileButton = document.getElementById('file-button');
 
+const CHUNK_SIZE = 16 * 1024; // 16 KB chunks
+
 // Tenor API Key
 const TENOR_API_KEY = 'AIzaSyB1AM5DigGcL1fyqkmxicsyzMJ_W9-mfpw';
 
@@ -83,6 +85,8 @@ function connect() {
             showTypingIndicator(message);
         } else if (message.type === 'stoppedTyping' && message.sender !== myUserId) {
             hideTypingIndicator(message);
+        } else if (message.type === 'file_complete') {
+            displayMessage(message);
         }
     };
 
@@ -110,8 +114,8 @@ function displayMessage(message, isCached = false) {
                 dmMessages.set(dmKey, []);
             }
             dmMessages.get(dmKey).push(message);
-        } else if (message.type === 'file') {
-            // Cache file messages as well
+        } else if (message.type === 'file_complete') {
+            // Cache file_complete messages as well
             if (currentRecipient === null) {
                 publicChatMessages.push(message);
             } else {
@@ -131,7 +135,7 @@ function displayMessage(message, isCached = false) {
             (message.sender === myUserId && message.recipient === currentRecipient) ||
             (message.recipient === myUserId && message.sender === currentRecipient)
         )) ||
-        (message.type === 'file' && (
+        (message.type === 'file_complete' && (
             (currentRecipient === null) ||
             (message.sender === myUserId && message.recipient === currentRecipient) ||
             (message.recipient === myUserId && message.sender === currentRecipient)
@@ -154,9 +158,9 @@ function displayMessage(message, isCached = false) {
         const contentElement = document.createElement('div');
         contentElement.classList.add('content');
 
-        if (message.type === 'file') {
+        if (message.type === 'file_complete') {
             const fileLink = document.createElement('a');
-            fileLink.href = message.fileData;
+            fileLink.href = message.fileUrl;
             fileLink.download = message.fileName;
             fileLink.textContent = `Download ${message.fileName} (${(message.fileSize / 1024).toFixed(2)} KB)`;
             contentElement.appendChild(fileLink);
@@ -389,61 +393,55 @@ const sendFile = () => {
     const file = fileInput.files[0];
     if (!file) return;
 
-    const reader = new FileReader();
-    reader.onload = (event) => {
-        const fileData = event.target.result; // Base64 encoded file
-        const fileName = file.name;
-        const fileSize = file.size;
-        const fileType = file.type;
+    const fileId = `${myUserId}-${Date.now()}-${file.name}`;
+    let offset = 0;
 
-        if (socket.readyState === WebSocket.OPEN) {
-            let messageType = 'file';
-            let messageRecipient = null;
+    // Send file_start message
+    socket.send(JSON.stringify({
+        type: 'file_start',
+        fileId: fileId,
+        fileName: file.name,
+        fileSize: file.size,
+        fileType: file.type,
+        sender: myUserId,
+        senderVanity: myUserVanity,
+        recipient: currentRecipient,
+    }));
 
-            if (currentRecipient) {
-                messageRecipient = currentRecipient;
-                displayMessage({
-                    type: 'file',
-                    fileData: fileData,
-                    fileName: fileName,
-                    fileSize: fileSize,
-                    fileType: fileType,
-                    sender: myUserId,
-                    senderVanity: myUserVanity,
-                    recipient: currentRecipient,
-                });
-            } else {
-                displayMessage({
-                    type: 'file',
-                    fileData: fileData,
-                    fileName: fileName,
-                    fileSize: fileSize,
-                    fileType: fileType,
-                    sender: myUserId,
-                    senderVanity: myUserVanity,
-                });
-            }
+    const readNextChunk = () => {
+        const slice = file.slice(offset, offset + CHUNK_SIZE);
+        const reader = new FileReader();
 
-            const messageToSend = {
-                type: messageType,
-                fileData: fileData,
-                fileName: fileName,
-                fileSize: fileSize,
-                fileType: fileType,
+        reader.onload = (event) => {
+            const chunkData = event.target.result; // ArrayBuffer
+            socket.send(JSON.stringify({
+                type: 'file_chunk',
+                fileId: fileId,
+                chunk: Array.from(new Uint8Array(chunkData)), // Convert ArrayBuffer to array of numbers for JSON
+                offset: offset,
                 sender: myUserId,
-                senderVanity: myUserVanity,
-            };
-            if (messageRecipient) {
-                messageToSend.recipient = messageRecipient;
-            }
+                recipient: currentRecipient,
+            }));
 
-            socket.send(JSON.stringify(messageToSend));
-            fileInput.value = ''; // Clear the file input
-        } else {
-            console.log('WebSocket is not open. readyState: ' + socket.readyState);
-        }
+            offset += chunkData.byteLength;
+
+            if (offset < file.size) {
+                readNextChunk();
+            } else {
+                // Send file_end message
+                socket.send(JSON.stringify({
+                    type: 'file_end',
+                    fileId: fileId,
+                    sender: myUserId,
+                    recipient: currentRecipient,
+                }));
+                fileInput.value = ''; // Clear the file input
+            }
+        };
+        reader.readAsArrayBuffer(slice);
     };
-    reader.readAsDataURL(file);
+
+    readNextChunk();
 };
 
 const sendMessage = () => {

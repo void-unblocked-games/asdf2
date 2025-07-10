@@ -2,6 +2,15 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const WebSocket = require('ws');
+const fs = require('fs');
+const path = require('path');
+
+const UPLOADS_DIR = path.join(__dirname, 'uploads');
+
+// Ensure uploads directory exists
+if (!fs.existsSync(UPLOADS_DIR)) {
+    fs.mkdirSync(UPLOADS_DIR);
+}
 // const ollama = require('ollama')({
 //     host: process.env.OLLAMA_HOST || 'http://localhost:11434',
 // });
@@ -45,8 +54,14 @@ const server = http.createServer((req, res) => {
     fs.readFile(filePath, (err, content) => {
         if (err) {
             if (err.code == 'ENOENT') {
-                res.writeHead(404);
-                res.end('File not found');
+                // If the file is not found, check if it's an upload
+                if (filePath.startsWith('./uploads/')) {
+                    res.writeHead(404);
+                    res.end('Uploaded file not found');
+                } else {
+                    res.writeHead(404);
+                    res.end('File not found');
+                }
             } else {
                 res.writeHead(500);
                 res.end('Server error');
@@ -63,6 +78,8 @@ const wss = new WebSocket.Server({ server });
 const clients = new Map(); // Maps userId to WebSocket
 const userVanities = new Map(); // Maps userId to userVanity
 const usersTyping = new Map(); // Maps userId to a Set of recipients they are typing to
+
+const fileTransferBuffers = new Map(); // Stores file chunks during transfer
 
 function generateUserId(ip) {
     const hash = crypto.createHash('sha256');
@@ -159,9 +176,62 @@ wss.on('connection', (ws, req) => {
             const sanitizedContent = purify.sanitize(parsedMessage.content);
             parsedMessage.content = sanitizedContent;
             broadcast(parsedMessage, ws);
+        } else if (parsedMessage.type === 'file_start') {
+            const { fileId, fileName, fileSize, fileType, sender, senderVanity, recipient } = parsedMessage;
+            fileTransferBuffers.set(fileId, { fileName, fileSize, fileType, sender, senderVanity, recipient, chunks: [], receivedSize: 0 });
+            console.log(`File transfer started: ${fileName} (${fileSize} bytes) from ${senderVanity}`);
+        } else if (parsedMessage.type === 'file_chunk') {
+            const { fileId, chunk, offset } = parsedMessage;
+            const transfer = fileTransferBuffers.get(fileId);
+            if (transfer) {
+                transfer.chunks.push({ chunk, offset });
+                transfer.receivedSize += chunk.length;
+                // Optional: send progress updates to sender
+            }
+        } else if (parsedMessage.type === 'file_end') {
+            const { fileId } = parsedMessage;
+            const transfer = fileTransferBuffers.get(fileId);
+            if (transfer) {
+                // Sort chunks by offset and reassemble
+                transfer.chunks.sort((a, b) => a.offset - b.offset);
+                const fileBuffer = Buffer.concat(transfer.chunks.map(c => Buffer.from(c.chunk)));
+
+                if (fileBuffer.length !== transfer.fileSize) {
+                    console.error(`File reassembly error: ${transfer.fileName}. Expected ${transfer.fileSize}, got ${fileBuffer.length}`);
+                    // Handle error: notify sender, clean up
+                    fileTransferBuffers.delete(fileId);
+                    return;
+                }
+
+                const uniqueFileName = `${Date.now()}-${transfer.fileName}`;
+                const filePath = path.join(UPLOADS_DIR, uniqueFileName);
+
+                fs.writeFile(filePath, fileBuffer, (err) => {
+                    if (err) {
+                        console.error(`Error saving file ${transfer.fileName}:`, err);
+                        // Handle error
+                    } else {
+                        console.log(`File saved: ${filePath}`);
+                        const fileUrl = `/uploads/${uniqueFileName}`;
+                        // Broadcast file_complete message
+                        broadcast({
+                            type: 'file_complete',
+                            fileId: fileId,
+                            fileName: transfer.fileName,
+                            fileSize: transfer.fileSize,
+                            fileType: transfer.fileType,
+                            fileUrl: fileUrl,
+                            sender: transfer.sender,
+                            senderVanity: transfer.senderVanity,
+                            recipient: transfer.recipient,
+                        });
+                    }
+                    fileTransferBuffers.delete(fileId); // Clean up buffer
+                });
+            }
         } else if (parsedMessage.type === 'file') {
-            // For file messages, we don't sanitize content, as it's base64 encoded file data
-            // We just broadcast it as is.
+            // This case is for the old file sending method, which will be removed later
+            // For now, we just broadcast it as is.
             broadcast(parsedMessage, ws);
         } /* else if (parsedMessage.type === 'aiQuery') {
             const userId = parsedMessage.sender;
