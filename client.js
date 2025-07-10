@@ -130,12 +130,16 @@ function displayMessage(message, isCached = false) {
         const unsafeHtml = converter.makeHtml(message.content);
         contentElement.innerHTML = unsafeHtml;
 
+        // Apply highlighting to new code blocks within this message
+        contentElement.querySelectorAll('pre code').forEach((block) => {
+            hljs.highlightElement(block);
+        });
+
         messageElement.appendChild(usernameElement);
         messageElement.appendChild(contentElement);
 
         messages.appendChild(messageElement);
         messages.scrollTop = messages.scrollHeight;
-        hljs.highlightAll(); // Apply highlighting to new code blocks
     }
 }
 

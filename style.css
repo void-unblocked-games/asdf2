@@ -383,6 +383,28 @@ html[data-theme='dark'] .message.my-message .username {
     white-space: pre-wrap; /* Preserve whitespace and wrap text */
 }
 
+/* Highlight.js related styles */
+pre {
+    background-color: #282c34; /* Dark background for code blocks */
+    padding: 1em;
+    border-radius: 8px;
+    overflow-x: auto;
+    margin: 1em 0;
+}
+
+code {
+    font-family: 'Fira Code', 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: 0.9em;
+    color: #abb2bf; /* Light grey for code text */
+}
+
+pre code {
+    display: block;
+    padding: 0;
+    background: none;
+    color: inherit;
+}
+
 /* Input Group */
 .input-group {
     display: flex;
