@@ -303,9 +303,9 @@ function displayGifResults(gifs) {
     }
     gifs.forEach(gif => {
         const img = document.createElement('img');
-        img.src = gif.media[0].nanogif.url;
+        img.src = gif.media_formats.nanogif.url;
         img.alt = gif.content_description;
-        img.dataset.gifUrl = gif.media[0].gif.url; // Store the full GIF URL
+        img.dataset.gifUrl = gif.media_formats.gif.url; // Store the full GIF URL
         img.addEventListener('click', (event) => {
             const selectedGifUrl = event.target.dataset.gifUrl;
             sendGifMessage(selectedGifUrl);
