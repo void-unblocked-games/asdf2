@@ -2,14 +2,9 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const WebSocket = require('ws');
-const ollamaModule = require('ollama');
+const ollama = require('ollama');
 
 let modelName = 'qwen:0.5b'; // Default Ollama model name for Qwen 0.5B
-
-// The ollama client is now directly imported and configured via environment variables or defaults.
-// No explicit instantiation needed here if the default export is the client instance itself.
-// If the client needs explicit host configuration, it should be done where 'ollama' is used.
-// For now, assuming it picks up OLLAMA_HOST env var or defaults to localhost.
 
 
 const preDefinedAiResponses = [
