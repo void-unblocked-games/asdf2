@@ -782,3 +782,8 @@ html[data-theme='dark'] #save-display-name-button:hover {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--scrollbar-thumb-hover-bg);
 }
+
+textarea {
+    font-family: inherit;
+    font-size: inherit;
+}
