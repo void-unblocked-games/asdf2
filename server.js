@@ -2,9 +2,9 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const WebSocket = require('ws');
-const ollama = require('ollama')({
-    host: process.env.OLLAMA_HOST || 'http://localhost:11434',
-});
+// const ollama = require('ollama')({
+//     host: process.env.OLLAMA_HOST || 'http://localhost:11434',
+// });
 
 let modelName = 'qwen:0.5b'; // Default Ollama model name for Qwen 0.5B
 
@@ -163,7 +163,7 @@ wss.on('connection', (ws, req) => {
             // For file messages, we don't sanitize content, as it's base64 encoded file data
             // We just broadcast it as is.
             broadcast(parsedMessage, ws);
-        } else if (parsedMessage.type === 'aiQuery') {
+        } /* else if (parsedMessage.type === 'aiQuery') {
             const userId = parsedMessage.sender;
             const currentCount = aiQueryCounts.get(userId) || 0;
 
@@ -224,7 +224,7 @@ wss.on('connection', (ws, req) => {
                 }
             }
             run();
-        }
+        } */
     });
 
     ws.on('close', () => {
