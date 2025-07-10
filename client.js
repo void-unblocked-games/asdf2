@@ -311,6 +311,8 @@ const sendMessage = () => {
 sendButton.addEventListener('click', sendMessage);
 
 messageInput.addEventListener('input', () => {
+    messageInput.style.height = 'auto'; // Reset height to auto
+    messageInput.style.height = messageInput.scrollHeight + 'px'; // Set height to scroll height
     if (socket.readyState === WebSocket.OPEN) {
         sendTypingStatus(true);
         clearTimeout(typingTimeout);
