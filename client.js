@@ -5,6 +5,13 @@ const gifButton = document.getElementById('gif-button');
 const userListElement = document.getElementById('user-list');
 const chatTitle = document.getElementById('chat-title');
 const loadingSpinner = document.getElementById('loading-spinner');
+const gifModal = document.getElementById('gif-modal');
+const gifSearchInput = document.getElementById('gif-search-input');
+const gifResultsContainer = document.getElementById('gif-results');
+const gifModalCloseButton = document.querySelector('#gif-modal .close-button');
+
+// Tenor API Key
+const TENOR_API_KEY = 'AIzaSyB1AM5DigGcL1fyqkmxicsyzMJ_W9-mfpw';
 
 const converter = new showdown.Converter({ 
     ghCodeBlocks: true,
@@ -265,8 +272,50 @@ function hideTypingIndicator(message) {
     }
 }
 
-const sendGifMessage = () => {
-    const gifUrl = prompt("Enter GIF URL:");
+function openGifSearchModal() {
+    gifModal.style.display = 'flex';
+    gifSearchInput.value = '';
+    gifResultsContainer.innerHTML = '';
+    searchTenorGifs('trending'); // Load trending GIFs initially
+}
+
+function closeGifSearchModal() {
+    gifModal.style.display = 'none';
+}
+
+async function searchTenorGifs(query) {
+    gifResultsContainer.innerHTML = ''; // Clear previous results
+    const url = `https://api.tenor.com/v1/search?q=${query}&key=${TENOR_API_KEY}&limit=20`;
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        displayGifResults(data.results);
+    } catch (error) {
+        console.error('Error fetching GIFs from Tenor:', error);
+        gifResultsContainer.innerHTML = '<p>Error loading GIFs. Please try again.</p>';
+    }
+}
+
+function displayGifResults(gifs) {
+    if (gifs.length === 0) {
+        gifResultsContainer.innerHTML = '<p>No GIFs found.</p>';
+        return;
+    }
+    gifs.forEach(gif => {
+        const img = document.createElement('img');
+        img.src = gif.media[0].nanogif.url;
+        img.alt = gif.content_description;
+        img.dataset.gifUrl = gif.media[0].gif.url; // Store the full GIF URL
+        img.addEventListener('click', (event) => {
+            const selectedGifUrl = event.target.dataset.gifUrl;
+            sendGifMessage(selectedGifUrl);
+            closeGifSearchModal();
+        });
+        gifResultsContainer.appendChild(img);
+    });
+}
+
+const sendGifMessage = (gifUrl) => {
     if (gifUrl) {
         const content = `![GIF](${gifUrl})`; // Markdown format for image
         if (socket.readyState === WebSocket.OPEN) {
@@ -360,7 +409,16 @@ const sendMessage = () => {
 };
 
 sendButton.addEventListener('click', sendMessage);
-gifButton.addEventListener('click', sendGifMessage);
+gifButton.addEventListener('click', openGifSearchModal);
+gifModalCloseButton.addEventListener('click', closeGifSearchModal);
+gifSearchInput.addEventListener('input', () => {
+    const query = gifSearchInput.value;
+    if (query.length > 2) { // Only search if query is at least 3 characters
+        searchTenorGifs(query);
+    } else if (query.length === 0) {
+        searchTenorGifs('trending'); // Show trending if search is cleared
+    }
+});
 
 messageInput.addEventListener('input', () => {
     messageInput.style.height = 'auto'; // Reset height to auto

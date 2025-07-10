@@ -811,3 +811,100 @@ textarea {
     font-family: inherit;
     font-size: inherit;
 }
+
+/* GIF Modal Styles */
+.gif-modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 100; /* Sit on top */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+    justify-content: center;
+    align-items: center;
+}
+
+.gif-modal-content {
+    background-color: var(--bg-container-light);
+    margin: auto;
+    padding: 20px;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-lg);
+    width: 80%;
+    max-width: 600px;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+html[data-theme='dark'] .gif-modal-content {
+    background-color: var(--bg-container-dark);
+}
+
+.gif-modal-content .close-button {
+    color: var(--text-secondary-light);
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+html[data-theme='dark'] .gif-modal-content .close-button {
+    color: var(--text-secondary-dark);
+}
+
+.gif-modal-content .close-button:hover,
+.gif-modal-content .close-button:focus {
+    color: var(--text-primary-light);
+    text-decoration: none;
+    cursor: pointer;
+}
+
+html[data-theme='dark'] .gif-modal-content .close-button:hover,
+html[data-theme='dark'] .gif-modal-content .close-button:focus {
+    color: var(--text-primary-dark);
+}
+
+#gif-search-input {
+    width: calc(100% - 20px);
+    padding: 10px;
+    border: 1px solid var(--input-border-light);
+    border-radius: var(--border-radius-sm);
+    background-color: var(--bg-container-light);
+    color: var(--text-primary-light);
+    font-size: 1em;
+}
+
+html[data-theme='dark'] #gif-search-input {
+    background-color: var(--bg-message-received-dark);
+    border-color: var(--input-border-dark);
+    color: var(--text-primary-dark);
+}
+
+#gif-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 10px;
+    max-height: 300px;
+    overflow-y: auto;
+    padding-right: 5px; /* For scrollbar */
+}
+
+#gif-results img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: var(--border-radius-sm);
+    cursor: pointer;
+    transition: transform 0.1s ease-in-out;
+}
+
+#gif-results img:hover {
+    transform: scale(1.05);
+}
