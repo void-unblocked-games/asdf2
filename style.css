@@ -823,7 +823,7 @@ textarea {
     display: none; /* Hidden by default */
     position: absolute; /* Position relative to its parent (.input-group) */
     bottom: 60px; /* Adjust as needed to position above the input group */
-    right: 10px; /* Align with the right side of the input group */
+    right: 0; /* Align with the rightmost end of the screen */
     z-index: 100; /* Sit on top */
     opacity: 0;
     visibility: hidden;
