@@ -2,8 +2,6 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const WebSocket = require('ws');
-const fs = require('fs');
-const path = require('path');
 
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
 
