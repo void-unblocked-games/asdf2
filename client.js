@@ -496,7 +496,7 @@ const sendMessage = () => {
     };
 };
 
-sendsendButton.addEventListener('click', sendMessage);
+sendButton.addEventListener('click', sendMessage);
 gifButton.addEventListener('click', openGifSearchModal);
 gifModalCloseButton.addEventListener('click', closeGifSearchModal);
 fileButton.addEventListener('click', () => fileInput.click());
