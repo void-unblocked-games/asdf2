@@ -314,12 +314,20 @@ function closeGifSearchModal() {
     gifModal.close();
 }
 
-async function searchTenorGifs(query) {
-    gifResultsContainer.innerHTML = ''; // Clear previous results
-    const url = `https://tenor.googleapis.com/v2/search?q=${query}&key=${TENOR_API_KEY}&client_key=my_test_app&limit=20`;
+let nextTenorPage = '';
+
+async function searchTenorGifs(query, next = '') {
+    if (next === null) return; // No more results
+
+    if (next === '') {
+        gifResultsContainer.innerHTML = ''; // Clear previous results only for new searches
+    }
+
+    const url = `https://tenor.googleapis.com/v2/search?q=${query}&key=${TENOR_API_KEY}&client_key=my_test_app&limit=20&pos=${next}`;
     try {
         const response = await fetch(url);
         const data = await response.json();
+        nextTenorPage = data.next;
         displayGifResults(data.results);
     } catch (error) {
         console.error('Error fetching GIFs from Tenor:', error);
@@ -505,6 +513,12 @@ gifSearchInput.addEventListener('input', () => {
         searchTenorGifs(query);
     } else if (query.length === 0) {
         searchTenorGifs('trending'); // Show trending if search is cleared
+    }
+});
+
+gifResultsContainer.addEventListener('scroll', () => {
+    if (gifResultsContainer.scrollTop + gifResultsContainer.clientHeight >= gifResultsContainer.scrollHeight - 5) { // 5px buffer
+        searchTenorGifs(gifSearchInput.value || 'trending', nextTenorPage);
     }
 });
 
