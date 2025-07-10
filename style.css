@@ -818,13 +818,14 @@ textarea {
 
 /* GIF Modal Styles */
 .gif-modal {
-    /* Dialog element handles display and positioning */
     border: none;
     padding: 0;
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-lg);
     background-color: transparent;
-    
+    max-width: 90%; /* Responsive max width */
+    max-height: 90vh; /* Responsive max height */
+    margin: auto; /* Center the dialog */
 }
 
 
@@ -834,10 +835,8 @@ textarea {
     padding: 15px;
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-md); /* Use shadow-md for popover */
-    max-width: 500px; /* Max width for the content */
-    max-width: 500px; /* Max width for the content */
-    max-height: 80vh; /* Max height for the content */
-    overflow-y: auto; /* Enable scrolling for content */
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     gap: 0; /* No space between search input and results */
@@ -892,11 +891,12 @@ html[data-theme='dark'] #gif-search-input {
 }
 
 #gif-results {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 0; /* No space between grid items */
-    
-}
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: stretch;
+    gap: 0; /* No space between flex items */
 
 #gif-results img {
     width: 90px; /* Fixed width for images */
