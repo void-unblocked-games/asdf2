@@ -285,7 +285,7 @@ function closeGifSearchModal() {
 
 async function searchTenorGifs(query) {
     gifResultsContainer.innerHTML = ''; // Clear previous results
-    const url = `https://api.tenor.com/v1/search?q=${query}&key=${TENOR_API_KEY}&limit=20`;
+    const url = `https://tenor.googleapis.com/v2/search?q=${query}&key=${TENOR_API_KEY}&client_key=my_test_app&limit=20`;
     try {
         const response = await fetch(url);
         const data = await response.json();
