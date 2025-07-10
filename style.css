@@ -821,26 +821,36 @@ textarea {
     border: none;
     padding: 0;
     border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-lg);
+    box-shadow: none;
     background-color: transparent;
-    max-width: 90%; /* Responsive max width */
-    max-height: 90vh; /* Responsive max height */
-    margin: auto; /* Center the dialog */
+    width: 100vw;
+    height: 100vh;
+    max-width: 100vw;
+    max-height: 100vh;
+    margin: 0;
+    top: 0;
+    left: 0;
+    transform: none;
+}
+
+.gif-modal::backdrop {
+    background-color: rgba(0, 0, 0, 0.7);
 }
 
 
 
 .gif-modal-content {
     background-color: var(--bg-container-light);
-    padding: 15px;
+    padding: 20px;
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-md); /* Use shadow-md for popover */
-    width: 100%;
-    height: 100%;
+    width: 90%;
+    height: 90%;
     display: flex;
     flex-direction: column;
-    gap: 0; /* No space between search input and results */
+    gap: 15px; /* Increased gap for better spacing */
     border: 1px solid var(--border-light);
+    margin: auto; /* Center the content within the full-screen dialog */
 }
 
 html[data-theme='dark'] .gif-modal-content {
@@ -893,10 +903,9 @@ html[data-theme='dark'] #gif-search-input {
 #gif-results {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: flex-start;
-    align-content: stretch;
-    gap: 0; /* No space between flex items */
+    justify-content: center;
+    align-items: center;
+    gap: 10px; /* Add space between flex items */
 
 #gif-results img {
     width: 90px; /* Fixed width for images */
