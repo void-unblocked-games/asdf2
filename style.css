@@ -438,6 +438,7 @@ html[data-theme='dark'] .input-group {
     background-color: var(--bg-container-light); /* Match container background */
     color: var(--text-primary-light);
     transition: border-color var(--transition-speed), background-color var(--transition-speed), color var(--transition-speed), box-shadow var(--transition-speed); /* Added box-shadow to transition */
+    font-family: 'Imprima', sans-serif;
 }
 
 #message-input:focus {
