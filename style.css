@@ -815,34 +815,36 @@ textarea {
 /* GIF Modal Styles */
 .gif-modal {
     display: none; /* Hidden by default */
-    position: fixed; /* Stay in place */
+    position: absolute; /* Position relative to its parent (.input-group) */
+    bottom: 60px; /* Adjust as needed to position above the input group */
+    right: 0; /* Align with the right side of the input group */
     z-index: 100; /* Sit on top */
-    left: 0;
-    top: 0;
-    width: 100%; /* Full width */
-    height: 100%; /* Full height */
-    overflow: auto; /* Enable scroll if needed */
-    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
-    justify-content: center;
-    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.gif-modal.show {
+    display: block; /* Show when 'show' class is added */
+    opacity: 1;
+    visibility: visible;
 }
 
 .gif-modal-content {
     background-color: var(--bg-container-light);
-    margin: auto;
-    padding: 20px;
+    padding: 15px;
     border-radius: var(--border-radius-md);
-    box-shadow: var(--shadow-lg);
-    width: 80%;
-    max-width: 600px;
-    position: relative;
+    box-shadow: var(--shadow-md); /* Use shadow-md for popover */
+    width: 300px; /* Fixed width for the popover */
     display: flex;
     flex-direction: column;
-    gap: 15px;
+    gap: 10px;
+    border: 1px solid var(--border-light);
 }
 
 html[data-theme='dark'] .gif-modal-content {
     background-color: var(--bg-container-dark);
+    border-color: var(--border-dark);
 }
 
 .gif-modal-content .close-button {

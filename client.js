@@ -273,14 +273,14 @@ function hideTypingIndicator(message) {
 }
 
 function openGifSearchModal() {
-    gifModal.style.display = 'flex';
+    gifModal.classList.add('show');
     gifSearchInput.value = '';
     gifResultsContainer.innerHTML = '';
     searchTenorGifs('trending'); // Load trending GIFs initially
 }
 
 function closeGifSearchModal() {
-    gifModal.style.display = 'none';
+    gifModal.classList.remove('show');
 }
 
 async function searchTenorGifs(query) {
@@ -529,6 +529,12 @@ window.addEventListener('click', (event) => {
     if (!event.target.matches('.settings-button') && !userProfileButton.contains(event.target) && !settingsDropdown.contains(event.target)) {
         if (settingsDropdown.classList.contains('show')) {
             settingsDropdown.classList.remove('show');
+        }
+    }
+    // Close GIF modal if clicked outside
+    if (!event.target.matches('#gif-button') && !gifButton.contains(event.target) && !gifModal.contains(event.target)) {
+        if (gifModal.classList.contains('show')) {
+            gifModal.classList.remove('show');
         }
     }
 });
