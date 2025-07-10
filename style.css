@@ -841,7 +841,6 @@ textarea {
     padding: 15px;
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-md); /* Use shadow-md for popover */
-    width: 300px; /* Fixed width for the popover */
     max-height: 400px; /* Fixed height for the popover */
     overflow-y: auto; /* Enable scrolling for content */
     display: flex;
@@ -906,7 +905,7 @@ html[data-theme='dark'] #gif-search-input {
     gap: 10px; /* Space between flex items */
     /* max-height: 300px; Removed as it's now on the parent .gif-modal-content */
     /* overflow-y: auto; Removed as it's now on the parent .gif-modal-content */
-    padding-right: 5px; /* For scrollbar */
+    /* padding-right: 5px; Removed for scrollbar */
 }
 
 #gif-results img {
