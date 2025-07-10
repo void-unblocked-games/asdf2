@@ -111,6 +111,12 @@ html[data-theme='dark'] ::-webkit-scrollbar-thumb:hover {
     100% { background-position: 0% 50%; }
 }
 
+/* Reduce Motion */
+html[data-reduce-motion='true'] * {
+    transition: none !important;
+    animation: none !important;
+}
+
 /* App Container */
 .app-container {
     display: flex;
@@ -216,7 +222,7 @@ html[data-theme='dark'] .user-item.selected {
 }
 
 /* Dark Mode Toggle */
-.dark-mode-toggle, .settings-button {
+.dark-mode-toggle, .settings-button, .reduce-motion-toggle {
     background-color: var(--bg-container-light);
     border: 1px solid var(--border-light);
     border-radius: 50%;
@@ -230,23 +236,23 @@ html[data-theme='dark'] .user-item.selected {
     transition: background-color var(--transition-speed), border-color var(--transition-speed), box-shadow var(--transition-speed);
 }
 
-html[data-theme='dark'] .dark-mode-toggle, html[data-theme='dark'] .settings-button {
+html[data-theme='dark'] .dark-mode-toggle, html[data-theme='dark'] .settings-button, html[data-theme='dark'] .reduce-motion-toggle {
     background-color: var(--bg-message-received-dark);
     border-color: var(--border-dark);
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
 }
 
-.dark-mode-toggle i, .settings-button i {
+.dark-mode-toggle i, .settings-button i, .reduce-motion-toggle i {
     color: var(--icon-light);
     font-size: 1.5em; /* Slightly larger icon */
     transition: color var(--transition-speed), transform var(--transition-speed);
 }
 
-html[data-theme='dark'] .dark-mode-toggle i, html[data-theme='dark'] .settings-button i {
+html[data-theme='dark'] .dark-mode-toggle i, html[data-theme='dark'] .settings-button i, html[data-theme='dark'] .reduce-motion-toggle i {
     color: var(--text-username-sent-dark);
 }
 
-.dark-mode-toggle.jiggle i, .settings-button.jiggle i {
+.dark-mode-toggle.jiggle i, .settings-button.jiggle i, .reduce-motion-toggle.jiggle i {
     animation: jiggle 0.3s ease-in-out;
 }
 
@@ -258,7 +264,7 @@ html[data-theme='dark'] .dark-mode-toggle i, html[data-theme='dark'] .settings-b
     100% { transform: rotate(0deg); }
 }
 
-.dark-mode-toggle.morph i, .settings-button.morph i {
+.dark-mode-toggle.morph i, .settings-button.morph i, .reduce-motion-toggle.morph i {
     animation: morph 0.3s ease-in-out forwards;
 }
 

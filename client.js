@@ -445,6 +445,8 @@ messageInput.addEventListener('keydown', (event) => {
 
 const darkModeToggle = document.getElementById('dark-mode-toggle');
 const darkModeIcon = darkModeToggle.querySelector('i');
+const reduceMotionToggle = document.getElementById('reduce-motion-toggle');
+const reduceMotionIcon = reduceMotionToggle.querySelector('i');
 const userProfileButton = document.getElementById('user-profile-button');
 
 function updateDarkModeIcon() {
@@ -454,6 +456,16 @@ function updateDarkModeIcon() {
     } else {
         darkModeIcon.classList.remove('fa-moon');
         darkModeIcon.classList.add('fa-sun');
+    }
+}
+
+function updateReduceMotionIcon() {
+    if (document.documentElement.getAttribute('data-reduce-motion') === 'true') {
+        reduceMotionIcon.classList.remove('fa-hand-paper');
+        reduceMotionIcon.classList.add('fa-hand-rock');
+    } else {
+        reduceMotionIcon.classList.remove('fa-hand-rock');
+        reduceMotionIcon.classList.add('fa-hand-paper');
     }
 }
 
@@ -487,6 +499,36 @@ darkModeToggle.addEventListener('click', () => {
     }, 300);
 });
 
+reduceMotionToggle.addEventListener('click', () => {
+    // Add jiggle and morph classes
+    reduceMotionToggle.classList.add('jiggle');
+    reduceMotionToggle.classList.add('morph');
+
+    // Toggle reduce motion
+    if (document.documentElement.getAttribute('data-reduce-motion') === 'true') {
+        document.documentElement.setAttribute('data-reduce-motion', 'false');
+        localStorage.setItem('reduce-motion', 'false');
+    } else {
+        document.documentElement.setAttribute('data-reduce-motion', 'true');
+        localStorage.setItem('reduce-motion', 'true');
+    }
+
+    // After half of the morph animation, switch the icon
+    setTimeout(() => {
+        updateReduceMotionIcon();
+    }, 150);
+
+    // After the morph animation completes, remove the morph class
+    setTimeout(() => {
+        reduceMotionToggle.classList.remove('morph');
+    }, 300);
+
+    // After the jiggle animation completes, remove the jiggle class
+    setTimeout(() => {
+        reduceMotionToggle.classList.remove('jiggle');
+    }, 300);
+});
+
 // Apply theme on page load
 document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('theme');
@@ -498,6 +540,16 @@ document.addEventListener('DOMContentLoaded', () => {
         document.documentElement.setAttribute('data-theme', 'light');
     }
     updateDarkModeIcon();
+
+    const savedReduceMotion = localStorage.getItem('reduce-motion');
+    if (savedReduceMotion) {
+        document.documentElement.setAttribute('data-reduce-motion', savedReduceMotion);
+    } else if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.setAttribute('data-reduce-motion', 'true');
+    } else {
+        document.documentElement.setAttribute('data-reduce-motion', 'false');
+    }
+    updateReduceMotionIcon();
 });
 
 const settingsDropdown = document.getElementById('settings-dropdown');
