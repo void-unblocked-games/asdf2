@@ -842,6 +842,7 @@ textarea {
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-md); /* Use shadow-md for popover */
     max-height: 400px; /* Fixed height for the popover */
+    max-width: 20%; /* Set max width to 20% */
     overflow-y: auto; /* Enable scrolling for content */
     display: flex;
     flex-direction: column;
