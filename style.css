@@ -389,6 +389,12 @@ html[data-theme='dark'] .message.my-message .username {
     white-space: pre-wrap; /* Preserve whitespace and wrap text */
 }
 
+.message .content img {
+    max-width: 20%;
+    max-height: 20%;
+    height: auto;
+}
+
 /* Highlight.js related styles */
 pre {
     background-color: #282c34; /* Dark background for code blocks */
@@ -915,8 +921,10 @@ html[data-theme='dark'] #gif-search-input {
     gap: 10px; /* Add space between flex items */
 
 #gif-results img {
-    width: 180px; /* Fixed width for images, twice as large */
-    height: auto; /* Maintain aspect ratio */
+    max-width: 20%; /* Max width for images */
+    max-height: 20%; /* Max height for images */
+    width: auto; /* Allow width to adjust based on max-width */
+    height: auto; /* Allow height to adjust based on max-height */
     border-radius: var(--border-radius-sm);
     cursor: pointer;
     transition: transform 0.1s ease-in-out;
