@@ -1,6 +1,7 @@
 const messages = document.getElementById('messages');
 const messageInput = document.getElementById('message-input');
 const sendButton = document.getElementById('send-button');
+const gifButton = document.getElementById('gif-button');
 const userListElement = document.getElementById('user-list');
 const chatTitle = document.getElementById('chat-title');
 const loadingSpinner = document.getElementById('loading-spinner');
@@ -264,6 +265,50 @@ function hideTypingIndicator(message) {
     }
 }
 
+const sendGifMessage = () => {
+    const gifUrl = prompt("Enter GIF URL:");
+    if (gifUrl) {
+        const content = `![GIF](${gifUrl})`; // Markdown format for image
+        if (socket.readyState === WebSocket.OPEN) {
+            let messageType = 'chat';
+            let messageRecipient = null;
+
+            if (currentRecipient) {
+                messageType = 'dm';
+                messageRecipient = currentRecipient;
+                displayMessage({
+                    type: 'dm',
+                    content: content,
+                    sender: myUserId,
+                    senderVanity: myUserVanity,
+                    recipient: currentRecipient,
+                });
+            } else {
+                displayMessage({
+                    type: 'chat',
+                    content: content,
+                    sender: myUserId,
+                    senderVanity: myUserVanity,
+                });
+            }
+
+            const messageToSend = {
+                type: messageType,
+                content: content,
+                sender: myUserId,
+                senderVanity: myUserVanity,
+            };
+            if (messageRecipient) {
+                messageToSend.recipient = messageRecipient;
+            }
+
+            socket.send(JSON.stringify(messageToSend));
+        } else {
+            console.log('WebSocket is not open. readyState: ' + socket.readyState);
+        }
+    }
+};
+
 const sendMessage = () => {
     const content = messageInput.value;
     if (content && socket.readyState === WebSocket.OPEN) {
@@ -315,6 +360,7 @@ const sendMessage = () => {
 };
 
 sendButton.addEventListener('click', sendMessage);
+gifButton.addEventListener('click', sendGifMessage);
 
 messageInput.addEventListener('input', () => {
     messageInput.style.height = 'auto'; // Reset height to auto

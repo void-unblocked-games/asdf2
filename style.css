@@ -482,6 +482,22 @@ html[data-theme='dark'] #message-input::placeholder {
     transition: background-color var(--transition-speed), transform 0.1s ease-out;
 }
 
+#gif-button {
+    background-color: var(--button-primary-light);
+    color: white;
+    border: none;
+    width: 45px; /* Make it square */
+    height: 45px; /* Make it square */
+    border-radius: 50%; /* Make it circular */
+    margin-left: 10px; /* Adjusted margin */
+    cursor: pointer;
+    font-size: 1.2em; /* Slightly larger icon */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color var(--transition-speed), transform 0.1s ease-out;
+}
+
 #send-button:hover {
     background-color: var(--button-primary-hover-light);
 }
