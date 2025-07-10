@@ -38,20 +38,20 @@
                 <textarea id="message-input" placeholder="Type a message..." rows="1"></textarea>
                 <input type="file" id="file-input" style="display: none;">
                 <button id="file-button"><i class="fas fa-paperclip"></i></button>
-                <button id="gif-button"><i class="fa-solid fa-picture"></i></button>
+                <button id="gif-button"><i class="fas fa-picture"></i></button>
                 <button id="send-button"><i class="fas fa-paper-plane"></i></button>
             </div>
         </div>
     </div>
     <div id="loading-spinner" class="loading-spinner"></div>
 
-    <div id="gif-modal" class="gif-modal">
+    <dialog id="gif-modal">
         <div class="gif-modal-content">
             <span class="close-button">&times;</span>
             <input type="text" id="gif-search-input" placeholder="Search for GIFs...">
             <div id="gif-results" class="gif-results"></div>
         </div>
-    </div>
+    </dialog>
 
     <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>

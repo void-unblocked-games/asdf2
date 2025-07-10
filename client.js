@@ -304,14 +304,14 @@ function hideTypingIndicator(message) {
 }
 
 function openGifSearchModal() {
-    gifModal.classList.add('show');
+    gifModal.showModal();
     gifSearchInput.value = '';
     gifResultsContainer.innerHTML = '';
     searchTenorGifs('trending'); // Load trending GIFs initially
 }
 
 function closeGifSearchModal() {
-    gifModal.classList.remove('show');
+    gifModal.close();
 }
 
 async function searchTenorGifs(query) {
@@ -671,12 +671,7 @@ window.addEventListener('click', (event) => {
             settingsDropdown.classList.remove('show');
         }
     }
-    // Close GIF modal if clicked outside
-    if (!event.target.matches('#gif-button') && !gifButton.contains(event.target) && !gifModal.contains(event.target)) {
-        if (gifModal.classList.contains('show')) {
-            gifModal.classList.remove('show');
-        }
-    }
+    
 });
 
 const saveDisplayNameButton = document.getElementById('save-display-name-button');

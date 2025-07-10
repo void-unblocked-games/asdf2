@@ -683,9 +683,7 @@ html[data-theme='dark'] .typing-indicator {
 /* Settings Dropdown */
 .settings-dropdown {
     position: absolute;
-    bottom: 80px; /* Position above the settings button */
-    left: 50%;
-    transform: translateX(-50%);
+    
     background-color: var(--bg-container-light);
     border: 1px solid var(--border-light);
     border-radius: var(--border-radius-md);
@@ -820,34 +818,29 @@ textarea {
 
 /* GIF Modal Styles */
 .gif-modal {
-    display: none; /* Hidden by default */
-    position: absolute; /* Position relative to its parent (.input-group) */
-    bottom: 60px; /* Adjust as needed to position above the input group */
-    right: 0; /* Align with the rightmost end of the screen */
-    z-index: 100; /* Sit on top */
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity 0.3s ease, visibility 0.3s ease;
+    /* Dialog element handles display and positioning */
+    border: none;
+    padding: 0;
+    border-radius: var(--border-radius-md);
+    box-shadow: var(--shadow-lg);
+    background-color: transparent;
+    
 }
 
-.gif-modal.show {
-    display: block; /* Show when 'show' class is added */
-    opacity: 1;
-    visibility: visible;
-}
+
 
 .gif-modal-content {
     background-color: var(--bg-container-light);
     padding: 15px;
     border-radius: var(--border-radius-md);
     box-shadow: var(--shadow-md); /* Use shadow-md for popover */
-    height: 20%; /* Forced height */
-    max-height: 400px; /* Fixed height for the popover */
-    max-width: 30%; /* Set max width to 30% */
+    max-width: 500px; /* Max width for the content */
+    max-width: 500px; /* Max width for the content */
+    max-height: 80vh; /* Max height for the content */
     overflow-y: auto; /* Enable scrolling for content */
     display: flex;
     flex-direction: column;
-    gap: 10px; /* Gap between search input and results */
+    gap: 0; /* No space between search input and results */
     border: 1px solid var(--border-light);
 }
 
@@ -901,7 +894,7 @@ html[data-theme='dark'] #gif-search-input {
 #gif-results {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-    gap: 10px; /* Space between grid items */
+    gap: 0; /* No space between grid items */
     
 }
 
