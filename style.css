@@ -392,7 +392,10 @@ html[data-theme='dark'] .message.my-message .username {
 .message .content img {
     max-width: 20%;
     max-height: 20%;
+    min-width: 15%;
+    min-height: 15%;
     height: auto;
+    object-fit: contain;
 }
 
 /* Highlight.js related styles */
@@ -923,8 +926,11 @@ html[data-theme='dark'] #gif-search-input {
 #gif-results img {
     max-width: 20%; /* Max width for images */
     max-height: 20%; /* Max height for images */
+    min-width: 15%; /* Min width for images */
+    min-height: 15%; /* Min height for images */
     width: auto; /* Allow width to adjust based on max-width */
     height: auto; /* Allow height to adjust based on max-height */
+    object-fit: contain; /* Maintain aspect ratio */
     border-radius: var(--border-radius-sm);
     cursor: pointer;
     transition: transform 0.1s ease-in-out;
