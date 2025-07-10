@@ -514,6 +514,14 @@ html[data-theme='dark'] #send-button:hover {
     background-color: var(--button-primary-hover-light);
 }
 
+html[data-theme='dark'] #gif-button {
+    background-color: var(--button-primary-light);
+}
+
+html[data-theme='dark'] #gif-button:hover {
+    background-color: var(--button-primary-hover-light);
+}
+
 /* Typing Indicator */
 .typing-indicator {
     font-style: italic;
