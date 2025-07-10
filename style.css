@@ -380,6 +380,7 @@ html[data-theme='dark'] .message.my-message .username {
 
 .message .content p {
     margin-top: 0;
+    white-space: pre-wrap; /* Preserve whitespace and wrap text */
 }
 
 /* Input Group */
