@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const WebSocket = require('ws');
-const Ollama = require('ollama');
+const { default: Ollama } = require('ollama');
 
 let ollama;
 let modelName = 'qwen:0.5b'; // Default Ollama model name for Qwen 0.5B
