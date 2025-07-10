@@ -7,7 +7,8 @@ const loadingSpinner = document.getElementById('loading-spinner');
 
 const converter = new showdown.Converter({ 
     ghCodeBlocks: true,
-    tasklists: true
+    tasklists: true,
+    simpleLineBreaks: true // Treat single newlines as <br>
 });
 let socket;
 let myUserId = localStorage.getItem('userId');
