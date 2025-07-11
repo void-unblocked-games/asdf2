@@ -135,12 +135,14 @@ wss.on('connection', (ws, req) => {
         const userMessages = messageCounts.get(currentUserId) || [];
         const recentMessages = userMessages.filter(timestamp => now - timestamp < 10000);
 
-        if (recentMessages.length >= 5) {
+        if (parsedMessage.type !== 'file_chunk' && recentMessages.length >= 5) {
             ws.send(JSON.stringify({ type: 'error', message: 'You are sending messages too quickly. Please wait a moment and try again.' }));
             return;
         }
 
-        messageCounts.set(currentUserId, [...recentMessages, now]);
+        if (parsedMessage.type !== 'file_chunk') {
+            messageCounts.set(currentUserId, [...recentMessages, now]);
+        }
 
         parsedMessage.sender = currentUserId;
         parsedMessage.senderVanity = userVanities.get(currentUserId);
