@@ -49,6 +49,15 @@ let startTimestamp = +Date.now();
 let lastTimestamp = +Date.now();
 let backgroundDegrees = 0;
 
+function sendCompressedMessage(message) {
+    if (socket.readyState === WebSocket.OPEN) {
+        const compressed = pako.deflate(JSON.stringify(message));
+        socket.send(compressed);
+    } else {
+        console.log('WebSocket is not open. readyState: ' + socket.readyState);
+    }
+}
+
 function connect() {
     loadingSpinner.style.display = 'flex'; // Show spinner
 
@@ -69,11 +78,8 @@ function connect() {
         console.log('WebSocket connection established.');
         loadingSpinner.style.display = 'none'; // Hide spinner on successful connection
         if (myUserId && myUserVanity) {
-            socket.send(JSON.stringify({ type: 'reconnect', id: myUserId, vanity: myUserVanity }));
-        } else if (myUserVanity) {
-            // First connection, send vanity to server to get userId
-            socket.send(JSON.stringify({ type: 'setVanity', vanity: myUserVanity }));
-        }
+            sendCompressedMessage({ type: 'reconnect', id: myUserId, vanity: myUserVanity });
+        sendCompressedMessage({ type: 'setVanity', vanity: myUserVanity });
     };
 
     socket.onmessage = (event) => {
@@ -299,7 +305,7 @@ function getIdFromVanity(vanity) {
 
 function sendTypingStatus(isTyping) {
     if (socket.readyState === WebSocket.OPEN) {
-        socket.send(JSON.stringify({ type: isTyping ? 'typing' : 'stoppedTyping', sender: myUserId, recipient: currentRecipient }));
+        sendCompressedMessage({ type: isTyping ? 'typing' : 'stoppedTyping', sender: myUserId, recipient: currentRecipient });
     }
 }
 
@@ -421,7 +427,7 @@ const sendGifMessage = (gifUrl) => {
                 messageToSend.recipient = messageRecipient;
             }
 
-            socket.send(JSON.stringify(messageToSend));
+            sendCompressedMessage(messageToSend);
         } else {
             console.log('WebSocket is not open. readyState: ' + socket.readyState);
         }
@@ -436,7 +442,7 @@ const sendFile = (file) => {
     let offset = 0;
 
     // Send file_start message
-    socket.send(JSON.stringify({
+    sendCompressedMessage({
         type: 'file_start',
         fileId: fileId,
         fileName: file.name,
@@ -445,7 +451,7 @@ const sendFile = (file) => {
         sender: myUserId,
         senderVanity: myUserVanity,
         recipient: currentRecipient,
-    }));
+    });
 
     const readNextChunk = () => {
         const slice = file.slice(offset, offset + CHUNK_SIZE);
@@ -453,14 +459,14 @@ const sendFile = (file) => {
 
         reader.onload = (event) => {
             const chunkData = event.target.result; // ArrayBuffer
-            socket.send(JSON.stringify({
+            sendCompressedMessage({
                 type: 'file_chunk',
                 fileId: fileId,
                 chunk: Array.from(new Uint8Array(chunkData)), // Convert ArrayBuffer to array of numbers for JSON
                 offset: offset,
                 sender: myUserId,
                 recipient: currentRecipient,
-            }));
+            });
 
             offset += chunkData.byteLength;
 
@@ -468,12 +474,12 @@ const sendFile = (file) => {
                 readNextChunk();
             } else {
                 // Send file_end message
-                socket.send(JSON.stringify({
+                sendCompressedMessage({
                     type: 'file_end',
                     fileId: fileId,
                     sender: myUserId,
                     recipient: currentRecipient,
-                }));
+                });
                 fileInput.value = ''; // Clear the file input
             }
         };
@@ -524,7 +530,7 @@ const sendMessage = () => {
             messageToSend.recipient = messageRecipient;
         }
 
-        socket.send(JSON.stringify(messageToSend));
+        sendCompressedMessage(messageToSend);
         messageInput.value = '';
         clearTimeout(typingTimeout);
         sendTypingStatus(false);
