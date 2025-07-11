@@ -494,7 +494,7 @@ html[data-theme='dark'] #message-input::placeholder {
     transition: background-color var(--transition-speed), transform 0.1s ease-out;
 }
 
-#gif-button, #file-button {
+#gif-button, #file-button, #record-button {
     background-color: var(--button-primary-light);
     color: white;
     border: none;
@@ -508,6 +508,10 @@ html[data-theme='dark'] #message-input::placeholder {
     justify-content: center;
     align-items: center;
     transition: background-color var(--transition-speed), transform 0.1s ease-out;
+}
+
+#record-button.recording {
+    background-color: #ff0000;
 }
 
 #send-button:hover {

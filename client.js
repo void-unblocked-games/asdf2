@@ -11,6 +11,11 @@ const gifResultsContainer = document.getElementById('gif-results');
 const gifModalCloseButton = document.querySelector('#gif-modal .close-button');
 const fileInput = document.getElementById('file-input');
 const fileButton = document.getElementById('file-button');
+const recordButton = document.getElementById('record-button');
+
+let mediaRecorder;
+let audioChunks = [];
+let isRecording = false;
 
 const CHUNK_SIZE = 16 * 1024; // 16 KB chunks
 
@@ -403,8 +408,8 @@ const sendGifMessage = (gifUrl) => {
     }
 };
 
-const sendFile = () => {
-    const file = fileInput.files[0];
+const sendFile = (file) => {
+    if (!file) file = fileInput.files[0];
     if (!file) return;
 
     const fileId = `${myUserId}-${Date.now()}-${file.name}`;
@@ -513,6 +518,43 @@ gifButton.addEventListener('click', openGifSearchModal);
 gifModalCloseButton.addEventListener('click', closeGifSearchModal);
 fileButton.addEventListener('click', () => fileInput.click());
 fileInput.addEventListener('change', sendFile);
+
+recordButton.addEventListener('click', () => {
+    if (!isRecording) {
+        startRecording();
+    } else {
+        stopRecording();
+    }
+});
+
+async function startRecording() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        mediaRecorder = new MediaRecorder(stream);
+        mediaRecorder.ondataavailable = event => {
+            audioChunks.push(event.data);
+        };
+        mediaRecorder.onstop = () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+            const audioFile = new File([audioBlob], "voice-message.wav", { type: 'audio/wav' });
+            sendFile(audioFile);
+            audioChunks = [];
+        };
+        mediaRecorder.start();
+        isRecording = true;
+        recordButton.classList.add('recording');
+    } catch (error) {
+        console.error('Error accessing microphone:', error);
+        alert('Could not access microphone. Please ensure you have given permission.');
+    }
+}
+
+function stopRecording() {
+    mediaRecorder.stop();
+    isRecording = false;
+    recordButton.classList.remove('recording');
+}
+
 gifSearchInput.addEventListener('input', () => {
     const query = gifSearchInput.value;
     if (query.length > 2) { // Only search if query is at least 3 characters
