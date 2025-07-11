@@ -39,6 +39,7 @@ let myUserVanity = localStorage.getItem('userVanity');
 let userMap = new Map(); // Maps userId to { id, vanity }
 let currentRecipient = null;
 let typingTimeout = undefined;
+let isTypingMessageSent = false;
 let selectedUserItem = null;
 
 let publicChatMessages = [];
@@ -616,10 +617,14 @@ messageInput.addEventListener('input', () => {
     messageInput.style.height = 'auto'; // Reset height to auto
     messageInput.style.height = messageInput.scrollHeight + 'px'; // Set height to scroll height
     if (socket.readyState === WebSocket.OPEN) {
-        sendTypingStatus(true);
+        if (!isTypingMessageSent) {
+            sendTypingStatus(true);
+            isTypingMessageSent = true;
+        }
         clearTimeout(typingTimeout);
         typingTimeout = setTimeout(() => {
             sendTypingStatus(false);
+            isTypingMessageSent = false;
         }, 1500); // Send stoppedTyping after 1.5 seconds of no input
     }
 });
