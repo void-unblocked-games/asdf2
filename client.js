@@ -12,6 +12,7 @@ const gifModalCloseButton = document.querySelector('#gif-modal .close-button');
 const fileInput = document.getElementById('file-input');
 const fileButton = document.getElementById('file-button');
 const recordButton = document.getElementById('record-button');
+const localAudio = document.getElementById('localAudio');
 
 let mediaRecorder;
 let audioChunks = [];
@@ -529,7 +530,9 @@ recordButton.addEventListener('click', () => {
 
 async function startRecording() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+        window.localStream = stream;
+        localAudio.srcObject = stream;
         mediaRecorder = new MediaRecorder(stream);
         mediaRecorder.ondataavailable = event => {
             audioChunks.push(event.data);
@@ -539,12 +542,13 @@ async function startRecording() {
             const audioFile = new File([audioBlob], "voice-message.wav", { type: 'audio/wav' });
             sendFile(audioFile);
             audioChunks = [];
+            window.localStream.getTracks().forEach(track => track.stop());
         };
         mediaRecorder.start();
         isRecording = true;
         recordButton.classList.add('recording');
-    } catch (error) {
-        console.error('Error accessing microphone:', error);
+    } catch (err) {
+        console.error(`you got an error: ${err}`);
         alert('Could not access microphone. Please ensure you have given permission.');
     }
 }
