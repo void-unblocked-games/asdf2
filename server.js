@@ -96,7 +96,20 @@ wss.on('connection', (ws, req) => {
     // currentUserId will be determined by the first message from the client (reconnect or setVanity)
 
     ws.on('message', (message) => {
-        const parsedMessage = JSON.parse(message);
+        let parsedMessage;
+        if (message instanceof Buffer) {
+            // Decompress binary message
+            try {
+                const decompressed = zlib.inflateSync(message).toString();
+                parsedMessage = JSON.parse(decompressed);
+            } catch (e) {
+                console.error("Failed to decompress or parse message:", e);
+                return; // Skip processing malformed message
+            }
+        } else {
+            // Parse text message
+            parsedMessage = JSON.parse(message);
+        }
 
         if (parsedMessage.type === 'reconnect' && parsedMessage.id && parsedMessage.vanity) {
             const existingWs = [...clients.entries()].find(([clientWs, id]) => id === parsedMessage.id)?.[0];
