@@ -67,8 +67,31 @@ const server = http.createServer((req, res) => {
                 res.end('Server error');
             }
         } else {
-            res.writeHead(200, { 'Content-Type': contentType });
-            res.end(content, 'utf-8');
+            const acceptEncoding = req.headers['accept-encoding'] || '';
+            if (/gzip\b/.test(acceptEncoding)) {
+                zlib.gzip(content, (err, result) => {
+                    if (err) {
+                        res.writeHead(500);
+                        res.end('Server error');
+                        return;
+                    }
+                    res.writeHead(200, { 'Content-Type': contentType, 'Content-Encoding': 'gzip' });
+                    res.end(result);
+                });
+            } else if (/deflate\b/.test(acceptEncoding)) {
+                zlib.deflate(content, (err, result) => {
+                    if (err) {
+                        res.writeHead(500);
+                        res.end('Server error');
+                        return;
+                    }
+                    res.writeHead(200, { 'Content-Type': contentType, 'Content-Encoding': 'deflate' });
+                    res.end(result);
+                });
+            } else {
+                res.writeHead(200, { 'Content-Type': contentType });
+                res.end(content, 'utf-8');
+            }
         }
     });
 });
