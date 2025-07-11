@@ -2,6 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const WebSocket = require('ws');
+const zlib = require('zlib');
 
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
 const messageCounts = new Map();
@@ -327,9 +328,10 @@ wss.on('connection', (ws, req) => {
 });
 
 function broadcast(message, senderWs = null) {
+    const compressedMessage = zlib.deflateSync(JSON.stringify(message));
     wss.clients.forEach((client) => {
         if (client !== senderWs && client.readyState === WebSocket.OPEN) {
-            client.send(JSON.stringify(message));
+            client.send(compressedMessage);
         }
     });
 }

@@ -63,6 +63,7 @@ function connect() {
     }
 
     socket = new WebSocket('ws://' + window.location.host);
+    socket.binaryType = 'arraybuffer';
 
     socket.onopen = () => {
         console.log('WebSocket connection established.');
@@ -76,7 +77,15 @@ function connect() {
     };
 
     socket.onmessage = (event) => {
-        const message = JSON.parse(event.data);
+        let message;
+        if (event.data instanceof ArrayBuffer) {
+            // Decompress binary message
+            const decompressed = pako.inflate(new Uint8Array(event.data), { to: 'string' });
+            message = JSON.parse(decompressed);
+        } else {
+            // Parse text message
+            message = JSON.parse(event.data);
+        }
 
         if (message.type === 'userId') {
             myUserId = message.id;
