@@ -192,11 +192,19 @@ function displayMessage(message, isCached = false) {
         contentElement.classList.add('content');
 
         if (message.type === 'file_complete') {
-            const fileLink = document.createElement('a');
-            fileLink.href = message.fileUrl;
-            fileLink.download = message.fileName;
-            fileLink.textContent = `Download ${message.fileName} (${(message.fileSize / 1024).toFixed(2)} KB)`;
-            contentElement.appendChild(fileLink);
+            // Check if the file is an audio file
+            if (message.fileType.startsWith('audio/')) {
+                const audioElement = document.createElement('audio');
+                audioElement.controls = true;
+                audioElement.src = message.fileUrl;
+                contentElement.appendChild(audioElement);
+            } else {
+                const fileLink = document.createElement('a');
+                fileLink.href = message.fileUrl;
+                fileLink.download = message.fileName;
+                fileLink.textContent = `Download ${message.fileName} (${(message.fileSize / 1024).toFixed(2)} KB)`;
+                contentElement.appendChild(fileLink);
+            }
         } else if (message.content.startsWith('![GIF](') && message.content.endsWith(')')) {
             const gifUrl = message.content.substring(7, message.content.length - 1);
             const gifImg = document.createElement('img');

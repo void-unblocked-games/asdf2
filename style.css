@@ -395,6 +395,12 @@ html[data-theme='dark'] .message.my-message .username {
     object-fit: contain;
 }
 
+.message .content audio {
+    max-width: 100%;
+    height: 30px;
+    margin-top: 5px;
+}
+
 /* Highlight.js related styles */
 pre {
     background-color: #282c34; /* Dark background for code blocks */
