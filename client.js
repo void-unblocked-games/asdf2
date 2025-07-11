@@ -98,6 +98,10 @@ function connect() {
             hideTypingIndicator(message);
         } else if (message.type === 'file_complete') {
             displayMessage(message);
+        } else if (message.type === 'user_joined') {
+            displaySystemMessage(`${message.vanity} has joined the chat.`);
+        } else if (message.type === 'user_left') {
+            displaySystemMessage(`${message.vanity} has left the chat.`);
         }
     };
 
@@ -535,6 +539,15 @@ recordButton.addEventListener('click', () => {
 
 async function startRecording() {
     try {
+        // First, prompt for devices and permissions using the AudioDevices class
+        await window.audioDevices.getDevices();
+
+        if (window.audioDevices.denied) {
+            alert('Microphone access denied. Please enable it in your browser settings to record voice messages.');
+            return;
+        }
+
+        // If permissions are granted, get the stream
         const stream = await window.audioDevices.getUserMedia({ video: false, audio: true });
         window.localStream = stream;
         localAudio.srcObject = stream;
@@ -553,8 +566,8 @@ async function startRecording() {
         isRecording = true;
         recordButton.classList.add('recording');
     } catch (err) {
-        console.error(`you got an error: ${err}`);
-        alert('Could not access microphone. Please ensure you have given permission.');
+        console.error(`Error during recording setup: ${err}`);
+        alert('An error occurred while setting up recording. Please try again.');
     }
 }
 
@@ -567,6 +580,17 @@ function stopRecording() {
 function showPopup(message) {
     popupMessage.textContent = message;
     popupDialog.showModal();
+}
+
+function displaySystemMessage(message) {
+    const messageElement = document.createElement('div');
+    messageElement.classList.add('message', 'system-message');
+    const contentElement = document.createElement('div');
+    contentElement.classList.add('content');
+    contentElement.textContent = message;
+    messageElement.appendChild(contentElement);
+    messages.appendChild(messageElement);
+    messages.scrollTop = messages.scrollHeight;
 }
 
 popupCloseButton.addEventListener('click', () => {

@@ -109,6 +109,7 @@ wss.on('connection', (ws, req) => {
             ws.send(JSON.stringify({ type: 'userId', id: currentUserId, vanity: parsedMessage.vanity })); // Confirm ID to client
             console.log(`Client reconnected with ID: ${currentUserId} (Vanity: ${parsedMessage.vanity})`);
             broadcastUserList(); // Broadcast updated user list after reconnect
+            broadcast({ type: 'user_joined', userId: currentUserId, vanity: parsedMessage.vanity });
         } else if (parsedMessage.type === 'setVanity' && parsedMessage.vanity) {
             if (!currentUserId) { // If this is a new connection setting vanity for the first time
                 currentUserId = generateUserId(ip);
@@ -118,6 +119,7 @@ wss.on('connection', (ws, req) => {
             userVanities.set(currentUserId, parsedMessage.vanity);
             console.log(`Client ${currentUserId} set vanity to: ${parsedMessage.vanity}`);
             broadcastUserList(); // Broadcast updated user list after vanity is set
+            broadcast({ type: 'user_joined', userId: currentUserId, vanity: parsedMessage.vanity });
         }
 
         // Now that currentUserId and userVanities are (hopefully) set, process the message
@@ -129,6 +131,7 @@ wss.on('connection', (ws, req) => {
             ws.send(JSON.stringify({ type: 'userId', id: currentUserId, vanity: userVanities.get(currentUserId) }));
             console.log(`Assigned new ID and default vanity to client: ${currentUserId}`);
             broadcastUserList();
+            broadcast({ type: 'user_joined', userId: currentUserId, vanity: userVanities.get(currentUserId) });
         }
 
         const now = Date.now();
@@ -314,6 +317,7 @@ wss.on('connection', (ws, req) => {
             // Only delete if this WebSocket is still the one associated with currentUserId
             if (clients.get(ws) === currentUserId) {
                 clients.delete(ws);
+                broadcast({ type: 'user_left', userId: currentUserId, vanity: userVanities.get(currentUserId) });
             }
             // Do NOT delete userVanities[currentUserId] here, as the ID should persist
             usersTyping.delete(currentUserId);
