@@ -859,8 +859,8 @@ textarea {
     box-shadow: none;
     width: 90%;
     height: 90%;
-    display: flex;
-    flex-direction: column;
+    display: block;
+    overflow-y: auto;
     gap: 15px; /* Increased gap for better spacing */
     border: none;
     margin: auto; /* Center the content within the full-screen dialog */
@@ -917,8 +917,6 @@ html[data-theme='dark'] #gif-search-input {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     gap: 10px;
-    overflow-y: auto;
-    height: 100%;
     padding: 10px;
     border: 1px solid var(--border-light);
     border-radius: var(--border-radius-sm);
