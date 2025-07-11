@@ -4,6 +4,7 @@ const path = require('path');
 const WebSocket = require('ws');
 
 const UPLOADS_DIR = path.join(__dirname, 'uploads');
+const messageCounts = new Map();
 
 // Ensure uploads directory exists
 if (!fs.existsSync(UPLOADS_DIR)) {
@@ -129,6 +130,17 @@ wss.on('connection', (ws, req) => {
             console.log(`Assigned new ID and default vanity to client: ${currentUserId}`);
             broadcastUserList();
         }
+
+        const now = Date.now();
+        const userMessages = messageCounts.get(currentUserId) || [];
+        const recentMessages = userMessages.filter(timestamp => now - timestamp < 10000);
+
+        if (recentMessages.length >= 5) {
+            ws.send(JSON.stringify({ type: 'error', message: 'You are sending messages too quickly. Please wait a moment and try again.' }));
+            return;
+        }
+
+        messageCounts.set(currentUserId, [...recentMessages, now]);
 
         parsedMessage.sender = currentUserId;
         parsedMessage.senderVanity = userVanities.get(currentUserId);
