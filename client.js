@@ -164,6 +164,12 @@ function displayMessage(message, isCached = false) {
             fileLink.download = message.fileName;
             fileLink.textContent = `Download ${message.fileName} (${(message.fileSize / 1024).toFixed(2)} KB)`;
             contentElement.appendChild(fileLink);
+        } else if (message.content.startsWith('![GIF](') && message.content.endsWith(')')) {
+            const gifUrl = message.content.substring(7, message.content.length - 1);
+            const gifImg = document.createElement('img');
+            gifImg.src = gifUrl;
+            gifImg.alt = 'GIF';
+            contentElement.appendChild(gifImg);
         } else {
             const unsafeHtml = converter.makeHtml(message.content);
             contentElement.innerHTML = unsafeHtml;
