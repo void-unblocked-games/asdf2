@@ -13,6 +13,9 @@ const fileInput = document.getElementById('file-input');
 const fileButton = document.getElementById('file-button');
 const recordButton = document.getElementById('record-button');
 const localAudio = document.getElementById('localAudio');
+const popupDialog = document.getElementById('popup-dialog');
+const popupMessage = document.getElementById('popup-message');
+const popupCloseButton = document.getElementById('popup-close-button');
 
 let mediaRecorder;
 let audioChunks = [];
@@ -22,6 +25,8 @@ const CHUNK_SIZE = 16 * 1024; // 16 KB chunks
 
 // Tenor API Key
 const TENOR_API_KEY = 'AIzaSyB1AM5DigGcL1fyqkmxicsyzMJ_W9-mfpw';
+
+window.alert = showPopup;
 
 const converter = new showdown.Converter({ 
     ghCodeBlocks: true,
@@ -530,7 +535,7 @@ recordButton.addEventListener('click', () => {
 
 async function startRecording() {
     try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+        const stream = await window.audioDevices.getUserMedia({ video: false, audio: true });
         window.localStream = stream;
         localAudio.srcObject = stream;
         mediaRecorder = new MediaRecorder(stream);
@@ -558,6 +563,15 @@ function stopRecording() {
     isRecording = false;
     recordButton.classList.remove('recording');
 }
+
+function showPopup(message) {
+    popupMessage.textContent = message;
+    popupDialog.showModal();
+}
+
+popupCloseButton.addEventListener('click', () => {
+    popupDialog.close();
+});
 
 gifSearchInput.addEventListener('input', () => {
     const query = gifSearchInput.value;
@@ -751,12 +765,12 @@ saveDisplayNameButton.addEventListener('click', () => {
         if (socket.readyState === WebSocket.OPEN) {
             socket.send(JSON.stringify({ type: 'setVanity', vanity: myUserVanity }));
         }
-        alert('Display name updated!');
+        showPopup('Display name updated!');
         settingsDropdown.classList.remove('show'); // Close dropdown after saving
     } else if (newVanity === myUserVanity) {
-        alert('New display name is the same as the current one.');
+        showPopup('New display name is the same as the current one.');
     } else {
-        alert('Display name cannot be empty.');
+        showPopup('Display name cannot be empty.');
     }
 });
 

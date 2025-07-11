@@ -46,6 +46,13 @@
     </div>
     <div id="loading-spinner" class="loading-spinner"></div>
 
+    <dialog id="popup-dialog">
+        <div class="popup-dialog-content">
+            <p id="popup-message"></p>
+            <button id="popup-close-button">OK</button>
+        </div>
+    </dialog>
+
     <dialog id="gif-modal">
         <div class="gif-modal-content">
             <span class="close-button">&times;</span>
@@ -57,6 +64,7 @@
     <script src="https://cdn.jsdelivr.net/npm/showdown@2.1.0/dist/showdown.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
     <audio id="localAudio" autoplay muted></audio>
+    <script src="audio-devices.js"></script>
     <script src="client.js"></script>
 </body>
 </html>
