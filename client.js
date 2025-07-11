@@ -83,6 +83,7 @@ function connect() {
             // First connection, send vanity to server to get userId
             sendCompressedMessage({ type: 'setVanity', vanity: myUserVanity });
         }
+    };
 
     socket.onmessage = (event) => {
         let message;
