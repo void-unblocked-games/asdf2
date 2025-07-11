@@ -79,8 +79,10 @@ function connect() {
         loadingSpinner.style.display = 'none'; // Hide spinner on successful connection
         if (myUserId && myUserVanity) {
             sendCompressedMessage({ type: 'reconnect', id: myUserId, vanity: myUserVanity });
-        sendCompressedMessage({ type: 'setVanity', vanity: myUserVanity });
-    };
+        } else if (myUserVanity) {
+            // First connection, send vanity to server to get userId
+            sendCompressedMessage({ type: 'setVanity', vanity: myUserVanity });
+        }
 
     socket.onmessage = (event) => {
         let message;
